@@ -3,6 +3,8 @@ import { loginSchema, registerSchema } from "../validation/userSchema";
 import { User } from "../models/userModel";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from "..";
+import { generateFilePath } from "../utils/helper";
 
 
 
@@ -15,14 +17,15 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         
         const existingUser = await User.findOne({ email })
         if(existingUser) { 
-            return res.status(400).json({ message :" email already registered", success: false})
+            res.status(400).json({ message :" email already registered", success: false})
+            return;
         }
+
+
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        let profilePhotoUrl = null;
-        if(req.file) {
-            profilePhotoUrl = `/uploads/${req.file.filename}`
-        }
+        // from helper function
+        const profilePhotoUrl = req.file ? generateFilePath(req.file) : ""
 
       const newUser = await User.create({
             fullname,
@@ -35,7 +38,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             }
         });
 
-        return res.status(201).json({
+         res.status(201).json({
             newUser,
             message: "Accound created successuflly",
             success: true,
@@ -52,24 +55,28 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
         const user = await User.findOne({ email })
         if(!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({
-                message: "Invalid email or password"
+         res.status(401).json({
+                message: "Invalid email or password",
+                success: false
             })
+            return;
         }
         if(role !== user.role) {
-            return res.status(403).json({
+          res.status(403).json({
                 message: "Role Mismatch",
                 success: false
             })
+            return 
         }
 
        const token = jwt.sign({
         userId: user._id
        }, JWT_SECRET) 
 
-       return res.status(200).json({
+    res.status(200).json({
         message: `Welcome back, ${user.fullname}`,
         user,
+        token,
         success: true
        })
     } catch (err) {
@@ -78,11 +85,14 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 }
 
 export const logout = (req: Request,res: Response) => {
-    return
+    return res.status(200).json({
+        message: "Logged out successfully",
+        success: true
+    })
 }
 
 
-export const updateProfile = async (req: Request, res: Response) => {
+export const updateProfile = async (req: Request, res: Response) =>  {
     try {
         const { fullname, bio, skills} = req.body;
         const userId = req.user?.id;
@@ -96,18 +106,20 @@ export const updateProfile = async (req: Request, res: Response) => {
         }
 
         if(req.file) {
-            user.profile?.profilePhoto = `/uploads/${req.file.filename}`
+            user.profile = user.profile || {};
+            user.profile.profilePhoto = generateFilePath(req.file)
         }
-
-        user.fullname = fullname || user.fullname
-        user.profile?.bio = bio || user.profile?.bio
-        user.profile?.skills = skills ? skills.split(",") : user.profile?.skills
+        user.fullname = fullname || user.fullname;
+        if (user.profile) {
+            user.profile.bio = bio ?? user.profile.bio;
+            user.profile.skills = skills ? skills.split(",") : user.profile.skills;
+        }
 
         await user.save();
 
-        return res.status(200).json({ message: "Profile updated successfully.", success: true });
+       return res.status(200).json({ message: "Profile updated successfully.", success: true });
     } catch (err) {
-        console.error(error);
-        return res.status(500).json({ message: "Internal Server Error", success: false });
+        console.error(err);
+         res.status(500).json({ message: "Internal Server Error", success: false });
     }
 }

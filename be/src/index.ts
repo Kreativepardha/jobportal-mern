@@ -4,6 +4,10 @@ import dotenv from "dotenv";
 import helmet from 'helmet'
 import connectDB from "./utils/db";
 import { mainRouter } from "./routes";
+import path from 'path'
+
+
+
 dotenv.config();
 const app = express();
 
@@ -15,7 +19,7 @@ app.use(cors())
 
 const PORT = process.env.PORT || 3000;
 export const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/myapp";
-export const JWT_SECRET = process.env.JWT_SECRET
+export const JWT_SECRET = process.env.JWT_SECRET || "moiKey"
 
 app.use("/api/v1", mainRouter)
 
