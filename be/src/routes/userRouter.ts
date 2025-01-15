@@ -1,6 +1,7 @@
 import express from 'express'
 import { upload } from '../middlewares/upload'
 import { login, logout, register, updateProfile } from '../controllers/userController'
+import isAuthenticated from '../middlewares/isAuthenticated'
 
 
 const router = express.Router()
@@ -17,7 +18,7 @@ const router = express.Router()
 router.post("/register", upload.single("profilePhoto"), register)
 router.post("/login", login)
 router.get("/logout", logout)
-router.get("/update", upload.single("profilePhoto"), updateProfile)
+router.get("/update",isAuthenticated ,upload.single("profilePhoto"), updateProfile)
 
 
 export {
