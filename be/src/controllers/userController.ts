@@ -18,7 +18,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             return res.status(400).json({ message :" email already registered", success: false})
         }
         const hashedPassword = await bcrypt.hash(password, 10)
-        
+
         let profilePhotoUrl = null;
         if(req.file) {
             profilePhotoUrl = `/uploads/${req.file.filename}`
@@ -30,9 +30,9 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             phoneNumber,
             password: hashedPassword,
             role,
-            // profile: {
-            //     profilePhoto: profilePhotoUrl,
-            // }
+            profile: {
+                profilePhoto: profilePhotoUrl,
+            }
         });
 
         return res.status(201).json({
@@ -79,4 +79,35 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
 export const logout = (req: Request,res: Response) => {
     return
+}
+
+
+export const updateProfile = async (req: Request, res: Response) => {
+    try {
+        const { fullname, bio, skills} = req.body;
+        const userId = req.user?.id;
+
+        const user = await User.findById(userId)
+        if(!user) {
+            return res.status(404).json({
+                message: "User not found",
+                success: false
+            })
+        }
+
+        if(req.file) {
+            user.profile?.profilePhoto = `/uploads/${req.file.filename}`
+        }
+
+        user.fullname = fullname || user.fullname
+        user.profile?.bio = bio || user.profile?.bio
+        user.profile?.skills = skills ? skills.split(",") : user.profile?.skills
+
+        await user.save();
+
+        return res.status(200).json({ message: "Profile updated successfully.", success: true });
+    } catch (err) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal Server Error", success: false });
+    }
 }
