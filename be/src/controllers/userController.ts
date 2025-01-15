@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from "..";
 import { generateFilePath } from "../utils/helper";
+import logger from "../utils/logger";
 
 
 
@@ -25,7 +26,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         const hashedPassword = await bcrypt.hash(password, 10)
 
         // from helper function
-        const profilePhotoUrl = req.file ? generateFilePath(req.file) : ""
+        const profilePhotoUrl = generateFilePath(req.file)
 
       const newUser = await User.create({
             fullname,
@@ -38,6 +39,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             }
         });
 
+        logger.info(`New User regsitered: ${newUser.email}`)
+        
          res.status(201).json({
             newUser,
             message: "Accound created successuflly",
@@ -85,7 +88,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 }
 
 export const logout = (req: Request,res: Response) => {
-    return res.status(200).json({
+    res.status(200).json({
         message: "Logged out successfully",
         success: true
     })
@@ -106,18 +109,16 @@ export const updateProfile = async (req: Request, res: Response) =>  {
         }
 
         if(req.file) {
-            user.profile = user.profile || {};
             user.profile.profilePhoto = generateFilePath(req.file)
         }
-        user.fullname = fullname || user.fullname;
-        if (user.profile) {
-            user.profile.bio = bio ?? user.profile.bio;
-            user.profile.skills = skills ? skills.split(",") : user.profile.skills;
-        }
+
+        user.fullname = fullname || user.fullname
+        user.profile!.bio = bio || user.profile!.bio
+        user.profile!.skills = skills ? skills.split(",") : user.profile!.skills
 
         await user.save();
 
-       return res.status(200).json({ message: "Profile updated successfully.", success: true });
+        res.status(200).json({ message: "Profile updated successfully.", success: true });
     } catch (err) {
         console.error(err);
          res.status(500).json({ message: "Internal Server Error", success: false });

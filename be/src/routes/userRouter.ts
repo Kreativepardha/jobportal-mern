@@ -4,6 +4,15 @@ import { login, logout, register, updateProfile } from '../controllers/userContr
 
 
 const router = express.Router()
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Register a new user
+ *     responses:
+ *       201:
+ *         description: Account created successfully
+ */
 
 router.post("/register", upload.single("profilePhoto"), register)
 router.post("/login", login)

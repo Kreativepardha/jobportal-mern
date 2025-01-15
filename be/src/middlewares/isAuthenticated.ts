@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import jwt from "jsonwebtoken"
 import { UserPayload } from "../types/express";
+import { JWT_SECRET } from "..";
 
 
 const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
@@ -12,11 +13,10 @@ const isAuthenticated = async (req: Request, res: Response, next: NextFunction) 
             })
         }
         const token = authHeader.split(" ")[1];
-        const secretKey = process.env.JWT_SECRET as string;
-        if(!secretKey) {
+        if(!JWT_SECRET) {
             throw new Error("Jwt secret key is not configured")
         }
-        const decoded = jwt.verify(token, secretKey) as UserPayload;
+        const decoded = jwt.verify(token, JWT_SECRET) as UserPayload;
 
         req.user = decoded;
         next()
