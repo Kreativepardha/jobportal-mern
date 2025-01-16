@@ -8,9 +8,10 @@ const isAuthenticated = async (req: Request, res: Response, next: NextFunction) 
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({
+          res.status(401).json({
                 message: "Authentication token is missing or Invalid."
             })
+            return;
         }
         const token = authHeader.split(" ")[1];
         if(!JWT_SECRET) {
@@ -22,9 +23,10 @@ const isAuthenticated = async (req: Request, res: Response, next: NextFunction) 
         next()
     } catch (err) {
         console.error("Error is authentication middleware::", err);
-        return res.status(401).json({
+      res.status(401).json({
             message: "Authentication failed."
         })
+        return;
     }
 }
 
