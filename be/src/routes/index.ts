@@ -10,7 +10,7 @@ const router = express.Router()
 router.use("/user", userRouter)
 router.use("/company",isAuthenticated ,companyRouter)
 router.use("/job",isAuthenticated,jobRouter)
-router.use("/apply",applicationRouter)
+router.use("/apply",isAuthenticated,applicationRouter)
 
 export {
     router as mainRouter
