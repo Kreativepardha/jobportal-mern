@@ -1,11 +1,12 @@
 import express from "express"
+import { getAdminJobs, getAllJobs, getJobById, postJob } from "../controllers/jobController"
 
 const router = express.Router()
 
-router.post("/")
-router.get("/")
-router.get("/adminjob")
-router.get("/:id")
+router.post("/", postJob)
+router.get("/", getAllJobs)
+router.get("/adminjob", getAdminJobs)
+router.get("/:id", getJobById)
 
 
 export {
