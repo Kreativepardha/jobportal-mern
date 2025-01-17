@@ -12,7 +12,7 @@ import logger from "../utils/logger";
 
 
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register = async (req: Request, res: Response, next: NextFunction): Promise<void>  => {
     try {
         const { fullname, email, phoneNumber, password, role} = registerSchema.parse(req.body)
         
@@ -52,7 +52,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     }
 }
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void>  => {
     try {
         const { email, password, role } = loginSchema.parse(req.body);
 
@@ -95,14 +95,14 @@ export const logout = (req: Request,res: Response) => {
 }
 
 
-export const updateProfile = async (req: Request, res: Response) =>  {
+export const updateProfile = async (req: Request, res: Response): Promise<void> =>  {
     try {
         const { fullname, bio, skills} = req.body;
         const userId = req.user?.id;
 
         const user = await User.findById(userId)
         if(!user) {
-            return res.status(404).json({
+             res.status(404).json({
                 message: "User not found",
                 success: false
             })
@@ -112,11 +112,11 @@ export const updateProfile = async (req: Request, res: Response) =>  {
             user.profile.profilePhoto = generateFilePath(req.file)
         }
 
-        user.fullname = fullname || user.fullname
-        user.profile!.bio = bio || user.profile!.bio
-        user.profile!.skills = skills ? skills.split(",") : user.profile!.skills
+        user!.fullname = fullname || user!.fullname
+        user!.profile!.bio = bio || user!.profile!.bio
+        user!.profile!.skills = skills ? skills.split(",") : user!.profile!.skills
 
-        await user.save();
+        await user!.save();
 
         res.status(200).json({ message: "Profile updated successfully.", success: true });
     } catch (err) {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { applicationIdSchema, applicationSchema, jobIdSchema, updateStatusSchema } from "../validation/applicationSchema";
+import { applicationIdSchema, jobIdSchema, updateStatusSchema } from "../validation/applicationSchema";
 import { Application } from "../models/applicationModel";
 import { Job } from "../models/jobModel";
 import {z} from 'zod'
@@ -13,7 +13,7 @@ export const applyJob = async (req: Request , res: Response) => {
 
         const existingApplication = await Application.findOne({ job: jobId, applicant: userId})
         if(existingApplication) {
-            return res.status(400).json({
+             res.status(400).json({
                 message: "YOu have already applied for this job",
                 success: false
             })
@@ -21,7 +21,7 @@ export const applyJob = async (req: Request , res: Response) => {
 
         const job  = await Job.findById(jobId)
         if(!job) {
-            return res.status(404).json({
+             res.status(404).json({
                 message: "Job not found",
                 success: false
             })
@@ -32,14 +32,15 @@ export const applyJob = async (req: Request , res: Response) => {
             applicant: userId,
         })
 
-        job.applications.push(newApplication._id)
-        await job.save()
+        job!.applications.push(newApplication._id)
+        await job!.save()
 
-        return res.status(201).json({
+         res.status(201).json({
             message: "Job applied Successfully",
             success: true
         });
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
        console.error(`Error in applyjobs: ${err.message}`)
        res.status(500).json({
         message: 'Internal Server Error',
@@ -65,13 +66,13 @@ export const getAppliedJobs = async (req: Request, res: Response) => {
                 })
 
                 if(!applications || applications.length === 0) {
-                    return res.status(404).json({
+                     res.status(404).json({
                         message: "No Applications Found.",
                         success: false,
                     })
                 }
 
-                return res.status(200).json({
+                 res.status(200).json({
                     applications,
                     success: true
                 })
@@ -84,7 +85,7 @@ export const getAppliedJobs = async (req: Request, res: Response) => {
     }
 }
 
-export const getApplicants = async (req, res) => {
+export const getApplicants = async (req: Request, res: Response) => {
     try {
         // Validate job ID parameter
         const { id: jobId } = jobIdSchema.parse(req.params);
@@ -98,19 +99,19 @@ export const getApplicants = async (req, res) => {
         });
 
         if (!job) {
-            return res.status(404).json({
+             res.status(404).json({
                 message: "Job not found.",
                 success: false,
             });
         }
 
-        return res.status(200).json({
+         res.status(200).json({
             job,
             success: true,
         });
     } catch (error) {
         if (error instanceof z.ZodError) {
-            return res.status(400).json({
+             res.status(400).json({
                 message: "Validation error.",
                 errors: error.errors,
                 success: false,
@@ -131,7 +132,7 @@ export const updateStatus = async (req: Request, res: Response) => {
 
         const application = await Application.findById(applicationId);
         if (!application) {
-            return res.status(404).json({
+             res.status(404).json({
                 message: "Application not found.",
                 success: false,
             });
@@ -140,13 +141,13 @@ export const updateStatus = async (req: Request, res: Response) => {
         application.status = status.toLowerCase();
         await application.save();
 
-        return res.status(200).json({
+         res.status(200).json({
             message: "Status updated successfully.",
             success: true,
         });
     } catch (error) {
         if (error instanceof z.ZodError) {
-            return res.status(400).json({
+             res.status(400).json({
                 message: "Validation error.",
                 errors: error.errors,
                 success: false,

@@ -16,7 +16,7 @@ export const registerCompany = async(req:Request, res: Response) => {
         let existingCompany = await Company.findOne({ name: validatedData.name })
 
         if(existingCompany) {
-            return res.status(400).json({message: "You can't register the sam ecompany again", success: false})
+             res.status(400).json({message: "You can't register the sam ecompany again", success: false})
         }
 
         const newCompany = await Company.create({
@@ -28,7 +28,7 @@ export const registerCompany = async(req:Request, res: Response) => {
             userId: validatedData.userId
         })
 
-        return res.status(201).json({
+         res.status(201).json({
             message: "Company registered succesfuully",
             company: newCompany,
             success: true
@@ -39,14 +39,14 @@ export const registerCompany = async(req:Request, res: Response) => {
         logger.error(`Error in register Company:: ${err.message}`)
    
         if (err.name === "ZodError") {
-            return res.status(400).json({
+             res.status(400).json({
                 message: "Validation failed.",
                 errors: err.errors, // Include Zod validation errors
                 success: false,
             });
         }
    
-        return res.status(500).json({
+         res.status(500).json({
             message: "Internal Server Error",
             success: false
         })
@@ -65,19 +65,19 @@ export const getCompany = async (req:Request, res: Response) => {
         const companies = await Company.find({ userId })
 
         if(!companies || companies.length === 0) {
-            return res.status(404).json({
+             res.status(404).json({
                 message: "No companies found",
                 success: false
             })
         }
-        return res.status(200).json({
+         res.status(200).json({
             companies,
             success: true,
         });
 
     } catch (err) {
         logger.error(`Error in getCompany: ${err.message}`);
-        return res.status(500).json({
+         res.status(500).json({
             message: "Internal server error.",
             success: false,
         });
@@ -90,19 +90,19 @@ export const getCompanyById = async (req:Request, res: Response) => {
         const company = await Company.findById(id)
 
         if(!company) {
-            return res.status(404).json({
+             res.status(404).json({
                 message: "Company Not Found",
                 success: false
             })
         }
 
-        return res.status(200).json({
+         res.status(200).json({
             company,
             succesS: true
         })
     } catch (err) {
         logger.error(`Error in getCompanyById: ${error.message}`);
-        return res.status(500).json({
+         res.status(500).json({
             message: "Internal server error.",
             success: false,
         });
@@ -125,13 +125,13 @@ export const updateCompany = async(req: Request, res: Response) => {
         const company = await Company.findByIdAndUpdate(req.params.id, updateData, { new: true });
 
         if (!company) {
-            return res.status(404).json({
+             res.status(404).json({
                 message: "Company not found.",
                 success: false,
             });
         }
 
-        return res.status(200).json({
+         res.status(200).json({
             message: "Company information updated.",
             company,
             success: true,
@@ -139,7 +139,7 @@ export const updateCompany = async(req: Request, res: Response) => {
 
     } catch (err) {
         logger.error(`Error in updateCompany: ${err.message}`);
-        return res.status(500).json({
+         res.status(500).json({
             message: "Internal server error.",
             success: false,
         });

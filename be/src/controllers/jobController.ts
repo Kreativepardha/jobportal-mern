@@ -10,7 +10,7 @@ const DEFAULT_LIMIT = 10;
 
 
 
-export const postJob = async (req: Request, res: Response) => {
+export const postJob = async (req: Request, res: Response): Promise<void>  => {
     try {
         const parsedBody = JobSchema.parse(req.body)
         const userId = req.id;
@@ -33,21 +33,21 @@ export const postJob = async (req: Request, res: Response) => {
 
         logger.info(`New job created by admin ${userId}: ${job._id}`)
         
-        return res.status(201).json({
+         res.status(201).json({
             message: "New job created Successfully",
             job,
             success: true
         })
         } catch (err) {
         if(err instanceof z.ZodError) {
-            return res.status(400).json({
+             res.status(400).json({
                 message: "Validation Error.",
                 errors: err.errors,
                 success: false
             })
         }
         logger.error("Error creating job: ", err);
-        return res.status(500).json({
+         res.status(500).json({
             message: "An error occurred while creating the job",
             success: false
         })
@@ -55,7 +55,7 @@ export const postJob = async (req: Request, res: Response) => {
 }
 
 
-export const getAllJobs = async (req: Request, res: Response) => {
+export const getAllJobs = async (req: Request, res: Response): Promise<void>  => {
     try {
         const parsedQuery = querySchema.parse(req.query);
         const {
@@ -101,7 +101,7 @@ export const getAllJobs = async (req: Request, res: Response) => {
         .limit(Number(limit));
 
         if(!jobs.length) {
-            return res.status(404).json({
+             res.status(404).json({
                 message: "No jobs found matching the criteria",
                 success: false 
             });
@@ -109,7 +109,7 @@ export const getAllJobs = async (req: Request, res: Response) => {
 
         logger.info(`Jobs retrieved with keyword:: "${keyword}", page::${page}, limit::${limit}`);
 
-        return res.status(200).json({
+         res.status(200).json({
             jobs,
             pagination: {
                 currentPage: page,
@@ -120,7 +120,7 @@ export const getAllJobs = async (req: Request, res: Response) => {
         });
     } catch (err) {
         if(err instanceof z.ZodError) {
-            return res.status(400).json({
+             res.status(400).json({
                 message: "Validation Errors",
                 errors: err.errors,
                 success: false
@@ -135,7 +135,7 @@ export const getAllJobs = async (req: Request, res: Response) => {
 }
 
 
-export const getJobById = async (req: Request, res: Response) => {
+export const getJobById = async (req: Request, res: Response): Promise<void>  => {
     try {
         const parsedParams = jobIdSchema.parse(req.params)
 
@@ -143,20 +143,20 @@ export const getJobById = async (req: Request, res: Response) => {
         .populate({ path: "applications"})
 
         if(!job) {
-            return res.status(404).json({
+             res.status(404).json({
                 message: "Job not found",
                 success: false
             })
         }
 
         logger.info(`Job retrieved by ID::${parsedParams.id}`)
-        return res.status(200).json({
+         res.status(200).json({
             job, 
             success: true
         })
     } catch (err) {
         if(err instanceOf z.ZodError) {
-            return res.status(400).json({
+             res.status(400).json({
                 message: "Validation Errors",
                 errors: err.errors,
                 success: false
@@ -172,7 +172,7 @@ export const getJobById = async (req: Request, res: Response) => {
 }
 
 
-export const getAdminJobs = async(req: Request, res: Response) =>{
+export const getAdminJobs = async(req: Request, res: Response): Promise<void>  =>{
     try {
     const adminId =req.id;
     
@@ -181,13 +181,13 @@ export const getAdminJobs = async(req: Request, res: Response) =>{
     .sort({ createdAt: -1 });
 
     if(!jobs || jobs.length === 0) {
-        return res.status(404).json({
+         res.status(404).json({
             message: "Jobs not found",
             success: false
         })
     }
     logger.info(`Jobs retrieved for admin:: ${adminId}`)
-    return res.status(200).json({
+     res.status(200).json({
         jobs,
         success: true
     })
