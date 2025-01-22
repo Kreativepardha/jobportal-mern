@@ -1,16 +1,15 @@
-import { Route, Router, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
+import { LoginForm } from './components/auth/login-components/loginform'
 
 function App() {
 
   return (
     <>
-      <Router>
         <Routes>
-          <Route path="/login"  />
-          <Route path="/signup"  />
+          <Route path="/login" element={<LoginForm />}  />
+          {/* <Route path="/signup"  /> */}
         </Routes>
-      </Router>
     </>
   )
 }

@@ -5,9 +5,11 @@ import { useNavigate } from "react-router-dom"
 import axios from 'axios'
 import { toast } from 'sonner'
 import { USER_API_END_POINT } from "../../../utils/constant"
+import { inputFields } from "../data/inputData"
+import InputBox from "../../ui/InputBox"
 
 
-const LoginForm = () => {
+export const LoginForm = () => {
     const [input, setInput] = useState({
         email: "",
         password: "",
@@ -29,7 +31,7 @@ const LoginForm = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await axios.post(`${USER_API_END_POINT/login}`, input, {
+            const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -54,14 +56,28 @@ const LoginForm = () => {
     }, [user, navigate])
 
     return (
-        <div className="">
+        <div className="bg-black">
             {/* navbar */}
             <div className="">
                 <form onSubmit={submitHandler} className="w-1/2 border border-gray-800 rounded-md p-2 my-10">
                     <h2 className="font-bold text-xl mb-4">Login</h2>
-                    <div className="my-2">
-                        <label htmlFor=""></label>
+                   <div className="">
+                    {
+                        inputFields.map((field) => (
+                            <InputBox
+                             key={field.name}
+                             type={field.type}
+                             value={input[field.name]}
+                             name={field.name}
+                             placeholder={field.placeholder}
+                             label={field.label}
+                             onChange={changeEventHandler}   
+                            />
+                        ))
+                    }
+                    <div className="">
                     </div>
+                   </div>
                 </form>
             </div>
         </div>
