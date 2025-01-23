@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { USER_API_END_POINT } from "../../../utils/constant"
 import { inputFields } from "../data/inputData"
 import InputBox from "../../ui/InputBox"
+import RadioGroup from "../../ui/RadioGroup"
 
 
 export const LoginForm = () => {
@@ -42,7 +43,8 @@ export const LoginForm = () => {
                 navigate('/')
                 toast.success(res.data.message);
             }
-        } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
             console.error(err)
             toast.error(err.res?.data?.message || "Somthing went Wrong !!")
         } finally {
@@ -76,6 +78,16 @@ export const LoginForm = () => {
                         ))
                     }
                     <div className="">
+                    <RadioGroup
+                    name="role"
+                    options={[
+                        { label: 'Student', value: 'student' },
+                        { label: 'Recruiter', value: 'recruiter' },
+                    ]}
+                    value={input.role}
+                    onChange={(value) => setInput({ ...input, role: value })}
+/>
+
                     </div>
                    </div>
                 </form>
