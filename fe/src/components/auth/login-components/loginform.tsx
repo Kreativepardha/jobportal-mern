@@ -8,6 +8,7 @@ import { USER_API_END_POINT } from "../../../utils/constant"
 import { inputFields } from "../data/inputData"
 import InputBox from "../../ui/InputBox"
 import RadioGroup from "../../ui/RadioGroup"
+import Button from "../../ui/Button"
 
 
 export const LoginForm = () => {
@@ -48,7 +49,7 @@ export const LoginForm = () => {
             console.error(err)
             toast.error(err.res?.data?.message || "Somthing went Wrong !!")
         } finally {
-            setLoading(true)
+            setLoading(false)
         }
     } 
     useEffect(() => {
@@ -58,18 +59,18 @@ export const LoginForm = () => {
     }, [user, navigate])
 
     return (
-        <div className="bg-black">
+        <div className="bg-slate-200/20 border border-gray-800 flex flex-col justify-center">
             {/* navbar */}
             <div className="">
-                <form onSubmit={submitHandler} className="w-1/2 border border-gray-800 rounded-md p-2 my-10">
+                <form onSubmit={submitHandler} className="w-1/2  rounded-md p-2 my-10">
                     <h2 className="font-bold text-xl mb-4">Login</h2>
-                   <div className="">
+                   <div className="flex flex-col p-2 ">
                     {
                         inputFields.map((field) => (
                             <InputBox
                              key={field.name}
                              type={field.type}
-                             value={input[field.name]}
+                             value={input[field.name as keyof typeof input]}
                              name={field.name}
                              placeholder={field.placeholder}
                              label={field.label}
@@ -77,24 +78,26 @@ export const LoginForm = () => {
                             />
                         ))
                     }
-                    <div className="">
+                <div className="mt-4">
                     <RadioGroup
-                    name="role"
-                    options={[
-                        { label: 'Student', value: 'student' },
-                        { label: 'Recruiter', value: 'recruiter' },
-                    ]}
-                    value={input.role}
-                    onChange={(value) => setInput({ ...input, role: value })}
-/>
-
+                        name="role"
+                        options={[
+                            { label: 'Student', value: 'student' },
+                            { label: 'Recruiter', value: 'recruiter' },
+                        ]}
+                        value={input.role}
+                        onChange={(value) => setInput({ ...input, role: value })}
+                    />
                     </div>
                    </div>
+                   <Button 
+                   label="login"
+                   type="submit"
+                   className="w-full mt-4 bg-black"
+                   disabled={!input.email || !input.password || !input.role}
+                   />
                 </form>
             </div>
         </div>
     )
-
-
-
 }

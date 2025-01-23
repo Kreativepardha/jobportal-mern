@@ -6,10 +6,10 @@ function App() {
 
   return (
     <>
-        {/* <Routes>
+        <Routes>
           <Route path="/login" element={<LoginForm />}  />
           {/* <Route path="/signup"  /> */}
-    <LoginForm />
+        </Routes>
     </>
   )
 }

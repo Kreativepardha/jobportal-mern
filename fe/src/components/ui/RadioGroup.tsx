@@ -3,7 +3,10 @@ import React from "react";
 
 
 
-
+interface RadioOptions {
+    label: string;
+    value: string;
+}
 
 
 interface RadioGroupProps {
@@ -16,25 +19,27 @@ interface RadioGroupProps {
 
 
 const RadioGroup: React.FC<RadioGroupProps> = ({
-    options, value, onChange, name, className
+    options,
+    value,
+    onChange,
+    name,
+    className
 }) => {
     return (
         <div className={`flex flex-wrap gap-4 ${className}`}>
-            {options.map((opt) => {
-                    <label key={opt.value} className="flex items-center spacex-2 cursor-pointer">
-                        <input type="radio"
-                            name={name}
-                            value={opt.value}
-                            onChange={() => onChange(opt.value)}
-                            className="cursor-pointer"
-                        />
-                        <span>{opt.label}</span>
-                    </label>
-                })
-            }
+            {options.map((opt) => (
+                <label key={opt.value} className="flex items-center space-x-2 cursor-pointer">
+                    <input type="radio"
+                        name={name}
+                        value={opt.value}
+                        checked={value === opt.value}
+                        onChange={() => onChange(opt.value)}
+                        className="cursor-pointer"
+                    />
+                    <span>{opt.label}</span>
+                </label>
+        ))}
         </div>
-    )
+    );
 }
-
-
 export default RadioGroup;
